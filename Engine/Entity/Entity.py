@@ -3,7 +3,6 @@ import pygame
 
 class Entity:
     def __init__(self, name: str, id: str, image: pygame.image = None):
-        pygame.sprite.Sprite.__init__(self)  # ignore this pylint
         self.name = name
         self.id = id
         self.original_image = image

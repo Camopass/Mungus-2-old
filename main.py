@@ -31,8 +31,8 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sus.exit()
-
-    window.screen.fill((10, 25, 60))
+        if event.type == pygame.VIDEORESIZE:
+            window.window_surface = pygame.display.set_mode(size=(event.w, event.h), flags=pygame.RESIZABLE)
 
     if pygame.mouse.get_focused():
 
@@ -47,6 +47,8 @@ while True:
         if key[pygame.K_s]:
             player.yvel += 1
 
+        window.screen.fill((255, 255, 255))
+
         player3.set_rainbow()
 
         background = pygame.image.load('assets/sprites/background/Development/Testing-1.png').convert()
@@ -56,7 +58,9 @@ while True:
         window.screen.blit(font.render(str(clock.get_fps()), False, [255, 255, 255]), (10, 10))
 
         entityManager.render()
-        pygame.display.flip()
+
+        window.render()
+
         pygame.display.update()
 
         clock.tick(60)
