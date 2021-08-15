@@ -50,7 +50,7 @@ class Player(Entity):
         0 - Idle
         1 - Running
         """
-        # Runnning Animation
+        # Running Animation
         if abs(self.xvel) >= 0.1 or abs(self.yvel) >= 0.1:
             # round( sin(x / (10 - v) * 0.03) + 1)
             x = pygame.time.get_ticks()

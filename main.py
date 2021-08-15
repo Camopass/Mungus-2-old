@@ -8,11 +8,9 @@ from Engine.Window import Window
 
 pygame.init()
 
-icon = pygame.image.load('assets/sprites/player/000.png')
+icon = pygame.image.load('Mungus.ico')
 
 window = Window(1200, 800, "Mungus, the Sequel", icon)
-
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(u'camopass.mungustwo.prealpha')
 
 player = Player((255, 0, 0), is_main_player=True)
 
