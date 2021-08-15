@@ -11,4 +11,4 @@ Now, move the shortcut to your desktop.
 
 It is fairly simple to install, but an installer is planned soon.
 
-Does the webhook work?
+I think the webhook is working now.
