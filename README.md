@@ -10,3 +10,5 @@ Next, right click on **Mungus 2.exe** and click **Create shortcut**.
 Now, move the shortcut to your desktop.
 
 It is fairly simple to install, but an installer is planned soon.
+
+Does the webhook work?
