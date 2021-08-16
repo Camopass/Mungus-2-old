@@ -41,7 +41,8 @@ class Player(Entity):
     def get_frame(self):
         """
         Animation Format:
-        000
+        0000
+        0 - Direction; 0: l-r, 1: d, 2: u
         1 - Animation Set
         2 - Animation Frame
         3 - Frame is tint mask or not
@@ -51,16 +52,17 @@ class Player(Entity):
         1 - Running
         """
         # Running Animation
+        dir = '1' if self.yvel > 0 else '2'
         if abs(self.xvel) >= 0.1 or abs(self.yvel) >= 0.1:
             # round( sin(x / (10 - v) * 0.03) + 1)
             x = pygame.time.get_ticks()
             r = sin(x * .01) + 1
             self.y_offset = (r - 1) * 3
             frame_count = round(r)
-            return f'1{int(frame_count)}'
+            return '{0}1{1}'.format('0' if abs(self.xvel) > abs(self.yvel) else dir, int(frame_count))
         else:
             self.y_offset = 0
-            return '00'
+            return '{}00'.format('0' if abs(self.xvel) > abs(self.yvel) else dir)
 
     def get_image(self, frame):
         image = f'assets/sprites/player/{frame}0.png'
