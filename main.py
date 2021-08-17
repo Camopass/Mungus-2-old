@@ -1,4 +1,6 @@
 import sys as sus
+from math import ceil
+
 import pygame
 
 from Engine.Entity.Player import Player
@@ -30,18 +32,19 @@ background = pygame.transform.scale(background, (1200, 800))
 
 use_gamepad = True
 
-if use_gamepad:
-    pygame.joystick.init()
-    joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
+global use_gamepad
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
+use_gamepad = True if len(joysticks) > 0 else False
 
 
 def do_input(controlled_player):
     if use_gamepad:
         x = joysticks[0].get_axis(0)
         y = joysticks[0].get_axis(1)
-        if abs(x) > 0.05:
+        if abs(x) > 0.1:
             controlled_player.xvel += x
-        if abs(y) > 0.05:
+        if abs(y) > 0.1:
             controlled_player.yvel += y
     else:
         key = pygame.key.get_pressed()

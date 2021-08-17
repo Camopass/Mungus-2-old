@@ -1,6 +1,7 @@
 import pygame
 
 from math import ceil
+from Engine.Maths.Maths import map_range
 
 
 class Window:
@@ -8,6 +9,7 @@ class Window:
         self.window_surface = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         self.screen = pygame.surface.Surface((width, height))
         self.target_width, self.target_height = width, height
+        self.resized_rect = self.screen.get_rect()
         self.center_position = [0, 0]
         pygame.display.set_caption(caption)
         if icon is not None:
@@ -35,10 +37,21 @@ class Window:
         b = height - screen_height
         center_position[1] = b / 2
 
+        self.resized_rect = pygame.rect.Rect(*center_position, target_width, target_height)
+
         self.center_position = center_position
+
+    # Transform a Pos from the window surface to the screen surface
+    def get_transforms(self, x, y):
+        if not self.resized_rect.collidepoint(x, y):
+            return 0, 0
+        window = self.window_surface.get_rect()
+        m_x, m_y = map_range(x, self.center_position[0], window.width - self.center_position[0], 0, self.resized_rect.width), map_range(y, self.center_position[1], window.height - self.center_position[1], 0, self.resized_rect.height)
+        m_x, m_y = map_range(m_x, 0, self.resized_rect.width, 0, 1200), map_range(m_y, 0, self.resized_rect.height, 0, 800)
+
+        return m_x, m_y
 
     def render(self):
         self.window_surface.fill((0, 0, 0))
-
         resized_screen = pygame.transform.smoothscale(self.screen, (ceil(self.target_width), ceil(self.target_height)))
         self.window_surface.blit(resized_screen, self.center_position)
