@@ -11,6 +11,7 @@ class Window:
         self.target_width, self.target_height = width, height
         self.resized_rect = self.screen.get_rect()
         self.center_position = [0, 0]
+        self.entity_manager = None
         pygame.display.set_caption(caption)
         if icon is not None:
             pygame.display.set_icon(icon)
@@ -41,6 +42,10 @@ class Window:
 
         self.center_position = center_position
 
+    def get_mouse_pos(self):
+        x, y = pygame.mouse.get_pos()
+        return self.get_transforms(x, y)
+
     # Transform a Pos from the window surface to the screen surface
     def get_transforms(self, x, y):
         if not self.resized_rect.collidepoint(x, y):
@@ -55,3 +60,15 @@ class Window:
         self.window_surface.fill((0, 0, 0))
         resized_screen = pygame.transform.smoothscale(self.screen, (ceil(self.target_width), ceil(self.target_height)))
         self.window_surface.blit(resized_screen, self.center_position)
+
+    def mouse_up(self, button):
+        if self.entity_manager is not None:
+            for entity in self.entity_manager.entities:
+                if entity.rect.collidepoint(self.get_transforms(*pygame.mouse.get_pos())):
+                    entity.on_pressed(button)
+
+    def mouse_down(self, button):
+        if self.entity_manager is not None:
+            for entity in self.entity_manager.entities:
+                if entity.rect.collidepoint(self.get_transforms(*pygame.mouse.get_pos())):
+                    entity.on_released(button)

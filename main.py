@@ -1,11 +1,13 @@
 import sys as sus
-from math import ceil
-
 import pygame
 
-from Engine.Entity.Player import Player
+from Engine import resource_path
+from Engine.Button import Button
+from Engine.Entity import Player
 from Engine.EntityManager import EntityManager
 from Engine.Window import Window
+from Screens.DebugScreen import DebugScreen
+from Screens.SettingsScreen import SettingsScreen
 
 pygame.init()
 
@@ -19,18 +21,24 @@ player2 = Player((0, 255, 0))
 player2.xvel = 10
 
 player3 = Player((0, 0, 255))
-player3.yvel = -10
+player3.yvel = 10
 
-entityManager = EntityManager(window.screen, player, player3, player2)
+entity_manager = EntityManager(window.screen, player, player3, player2)
+window.entity_manager = entity_manager
 
 clock = pygame.time.Clock()
 
-font = pygame.font.SysFont("Arial", 10)
+font = pygame.font.SysFont("Ursus.ttf", 20)
 
-background = pygame.image.load('assets/sprites/background/Development/Testing-1.png').convert()
-background = pygame.transform.scale(background, (1200, 800))
+background = pygame.image.load(resource_path('assets/TileSlate_01.png')).convert()
 
-use_gamepad = True
+settins_screen = SettingsScreen(window)
+
+settings_icon = pygame.image.load(resource_path('assets/Settings.png')).convert_alpha()
+settings_icon = pygame.transform.scale2x(settings_icon)
+settings = Button(1150, 2, 'settings', settings_icon, label='Settings', func=settins_screen.toggle_open)
+
+entity_manager.entities.append(settings)
 
 global use_gamepad
 pygame.joystick.init()
@@ -38,36 +46,9 @@ joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_coun
 use_gamepad = True if len(joysticks) > 0 else False
 
 
-def do_input(controlled_player):
-    if use_gamepad:
-        x = joysticks[0].get_axis(0)
-        y = joysticks[0].get_axis(1)
-        if abs(x) > 0.1:
-            controlled_player.xvel += x
-        if abs(y) > 0.1:
-            controlled_player.yvel += y
-    else:
-        key = pygame.key.get_pressed()
-        if key[pygame.K_a]:
-            controlled_player.xvel -= 1
-        if key[pygame.K_d]:
-            controlled_player.xvel += 1
-        if key[pygame.K_w]:
-            controlled_player.yvel -= 1
-        if key[pygame.K_s]:
-            controlled_player.yvel += 1
+debug_screen = DebugScreen(window, 900, 10, 275, 700, 'Debug Screen', entity_manager)
 
-
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sus.exit()
-        if event.type == pygame.VIDEORESIZE:
-            window.window_surface = pygame.display.set_mode(size=(event.w, event.h), flags=pygame.RESIZABLE)
-            window.update_resize()  # Set the scaling of the window screen
-
-        '''
+'''
         JoyButton:
             A: 0
             B: 1
@@ -79,26 +60,78 @@ while True:
             MENU: 7
             LJ: 8
             RJ: 9
-        JoyAxisMotion:
-            
         '''
 
-    if pygame.mouse.get_focused():
-        window.screen.fill((0, 0, 0))
 
-        # Do the rainbow calculation for the rainbow player.
-        player3.set_rainbow()
+def do_input(controlled_player):
+    if use_gamepad:
+        x = joysticks[0].get_axis(0)
+        y = joysticks[0].get_axis(1)
+        if abs(x) > 0.1:
+            controlled_player.xvel += x
+        if abs(y) > 0.1:
+            controlled_player.yvel += y
+        if joysticks[0].get_button(6):
+            debug_screen.toggle_open()
+        if joysticks[0].get_button(7):
+            settins_screen.toggle_open()
+    else:
+        key = pygame.key.get_pressed()
+        if key[pygame.K_a]:
+            controlled_player.xvel -= 1
+        if key[pygame.K_d]:
+            controlled_player.xvel += 1
+        if key[pygame.K_w]:
+            controlled_player.yvel -= 1
+        if key[pygame.K_s]:
+            controlled_player.yvel += 1
+        if key[pygame.K_b]:
+            debug_screen.toggle_open()
 
-        window.screen.blit(background, (0, 0))
+def main():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sus.exit()
+            if event.type == pygame.VIDEORESIZE:
+                window.window_surface = pygame.display.set_mode(size=(event.w, event.h), flags=pygame.RESIZABLE)
+                window.update_resize()  # Set the scaling of the window screen
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == pygame.BUTTON_RIGHT:
+                    window.right_click = True
+                if event.button == pygame.BUTTON_LEFT:
+                    window.left_click = True
+                window.mouse_down(event.button)
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == pygame.BUTTON_RIGHT:
+                    window.right_click = False
+                if event.button == pygame.BUTTON_LEFT:
+                    window.left_click = False
+                window.mouse_up(event.button)
 
-        fps = round(clock.get_fps())
-        window.screen.blit(font.render(f'FPS: {fps}', False, [255, 255, 255]), (10, 10))
+        if pygame.mouse.get_focused():
+            window.screen.fill((0, 0, 0))
 
-        do_input(player)
-        entityManager.render()
+            # Do the rainbow calculation for the rainbow player.
+            player3.set_rainbow()
 
-        window.render()
+            window.screen.blit(background, (0, 0))
 
-        pygame.display.update()
+            fps = round(clock.get_fps())
+            window.screen.blit(font.render(f'FPS: {fps}', False, [255, 255, 255]), (10, 10))
 
-        clock.tick(60)
+            do_input(player)
+
+            entity_manager.render()
+            settins_screen.render()
+            debug_screen.render()
+            window.render()
+
+            pygame.display.update()
+
+            clock.tick(60)
+
+
+if __name__ == '__main__':
+    main()
