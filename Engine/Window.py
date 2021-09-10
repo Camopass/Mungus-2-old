@@ -1,7 +1,7 @@
 import pygame
 
 from math import ceil
-from Engine.Maths.Maths import map_range
+from Engine.Maths import map_range
 
 
 class Window:

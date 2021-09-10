@@ -3,8 +3,9 @@ import pygame
 
 from Engine import resource_path
 from Engine.Button import Button
-from Engine.Entity import Player
+from Engine.Entity import Player, Object
 from Engine.EntityManager import EntityManager
+from Engine.ObjectManager import ObjectManager
 from Engine.Window import Window
 from Screens.DebugScreen import DebugScreen
 from Screens.SettingsScreen import SettingsScreen
@@ -12,19 +13,24 @@ from Screens.SettingsScreen import SettingsScreen
 pygame.init()
 
 icon = pygame.image.load('Mungus.ico')
-
 window = Window(1200, 800, "Mungus, the Sequel", icon)
 
 player = Player((255, 0, 0), is_main_player=True)
-
 player2 = Player((0, 255, 0))
 player2.xvel = 10
-
 player3 = Player((0, 0, 255))
 player3.yvel = 10
 
 entity_manager = EntityManager(window.screen, player, player3, player2)
 window.entity_manager = entity_manager
+
+lamp_image = pygame.image.load('assets/floor_light_1.png').convert_alpha()
+lamp_bloom = pygame.image.load('assets/floor_light_1_emission.png').convert_alpha()
+light = Object('Floor Lamp', 'floor_lamp_1', lamp_image, enable_bloom=True, bloom_image=lamp_bloom)
+light.x = 600
+light.y = 400
+
+object_manager = ObjectManager(window.screen, light)
 
 clock = pygame.time.Clock()
 
@@ -126,6 +132,7 @@ def main():
             entity_manager.render()
             settins_screen.render()
             debug_screen.render()
+            object_manager.render()
             window.render()
 
             pygame.display.update()

@@ -1,8 +1,18 @@
 import typing
 import pygame
 
-from Engine import resource_path
+from PIL import Image, ImageFilter, ImageMath
 from math import sin
+from io import BytesIO
+
+from Engine import resource_path
+
+from Engine.Maths import Vec2
+
+
+def pil_to_pygame(image: Image.Image):
+    data = image.tobytes()
+    return pygame.image.fromstring(data, image.size, image.mode)
 
 
 class Entity:
@@ -18,7 +28,10 @@ class Entity:
         self.y_offset = 0
         self.x_offset = 0
         if image is not None:
+            self.rect = pygame.Rect(self.x, self.y, self.image.get_width(), self.image.get_height())
             self.rect.center = (self.x + self.image.get_width() / 2, self.y + self.image.get_height() / 2)
+        else:
+            self.rect = pygame.Rect(self.x, self.y, 1, 1)
 
     def update(self):
         if self.xvel != 0:
@@ -46,9 +59,9 @@ class Player(Entity):
         img = self.get_image(self.get_frame())
         image = pygame.transform.scale(img, (128, 128))
         self.image = image
-        self.rect = pygame.Rect(self.x, self.y, self.image.get_width(), self.image.get_height())
         self.tint_mask = None
         self.color = color
+        self.interactable_objects = []
         self.set_color(color)
 
     def set_color(self, color):
@@ -121,12 +134,47 @@ class Player(Entity):
 
 
 class Object(Entity):
-    def __init__(self, name: str, id: str, image, interactable: bool = False):
+    def __init__(self, name: str, id: str, image, *, interactable: bool = False, range: int = None,
+                 enable_bloom: bool = False, bloom_image=None):
         super().__init__(name, id, image)
         self.interactable = interactable
+        self.activation_range = range
+        self.enable_bloom = enable_bloom
+        if self.enable_bloom:
+            self.bloom_image = self.do_bloom(bloom_image)
+        else:
+            self.bloom_image = None
 
     def interact(self, player: Player):
         pass
+
+    '''def do_bloom(self, image):
+        im = pygame.image.tostring(image, "RGBA", False)
+        im = Image.frombuffer("RGBA", self.image.get_size(), im)
+        im.show()
+        intensity = 10
+        buffers = [im]
+        for i in range(1, 2):
+            buffer = buffers[i - 1].resize((buffers[i - 1].size[0] // 2, buffers[i - 1].size[1] // 2))
+            buffers.append(pil_to_pygame(buffer.filter(ImageFilter.GaussianBlur(radius=(intensity - i))).resize(im.size)))
+        final = pil_to_pygame(buffers[0])
+        for buffer in buffers[1:]:
+            final.blit(buffer, (0, 0), special_flags=pygame.BLEND_ADD)
+        return final'''
+
+    def do_bloom(self, image):
+        image2 = pygame.transform.smoothscale(image, (image.get_width() // 10, image.get_height() // 10))
+        image.blit(pygame.transform.smoothscale(image2, (image.get_width(), image.get_height())), (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
+        image3 = pygame.transform.smoothscale(image, (image.get_width() // 5, image.get_height() // 5))
+        image.blit(pygame.transform.smoothscale(image3, (image.get_width(), image.get_height())), (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
+
+        return image
+
+    def render(self, screen):
+        pos = (self.x + self.x_offset, self.y + self.y_offset)
+        screen.blit(self.image, pos)
+        if self.enable_bloom:
+            screen.blit(self.bloom_image, pos)
 
 
 class MoveableObject(Object):
