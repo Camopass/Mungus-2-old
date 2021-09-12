@@ -135,11 +135,12 @@ class Player(Entity):
 
 class Object(Entity):
     def __init__(self, name: str, id: str, image, *, interactable: bool = False, range: int = None,
-                 enable_bloom: bool = False, bloom_image=None):
+                 enable_bloom: bool = False, bloom_image=None, moveable=False):
         super().__init__(name, id, image)
         self.interactable = interactable
         self.activation_range = range
         self.enable_bloom = enable_bloom
+        self.moveable = moveable
         if self.enable_bloom:
             self.bloom_image = self.do_bloom(bloom_image)
         else:
@@ -171,12 +172,9 @@ class Object(Entity):
         return image
 
     def render(self, screen):
-        pos = (self.x + self.x_offset, self.y + self.y_offset)
-        screen.blit(self.image, pos)
+        pos = Vec2(self.x + self.x_offset, self.y + self.y_offset)
+        screen.blit(self.image, pos.to_tuple())
         if self.enable_bloom:
-            screen.blit(self.bloom_image, pos)
-
-
-class MoveableObject(Object):
-    def update(self):
-        super().update()
+            x = pos - (Vec2.from_tuple(self.image.get_size()) // Vec2(2, 2))
+            print(x)
+            screen.blit(self.bloom_image, x.to_tuple())

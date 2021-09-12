@@ -51,6 +51,15 @@ class Vec2:
     def __rsub__(self, other):
         return Vec2(other - self.x, other - self.y)
 
+    def __truediv__(self, other):
+        return Vec2(other / self.x, other / self.y)
+
+    def __floordiv__(self, other):
+        return Vec2(math.floor(self.x / other.x),  math.floor(self.y / other.y))
+
+    def __repr__(self):
+        return "Vec2(%s, %s)" % (self.x, self.y)
+
     @classmethod
     def from_tuple(cls, tp):
         return cls(*tp)
