@@ -8,16 +8,16 @@ class ObjectManager:
         self.screen = screen
         self.objects = list(objects)
 
-    def render(self):
-        self.objects.sort(key=lambda x: x.y)
-        size = self.screen.get_size()
+    def update(self):
 
         from main import player
         player.interactable_objects = []
 
         for object in self.objects:
+            object.update()
             if object.interactable:
                 if pythagoras(Vec2(object.x, object.y), Vec2(player.x, player.y)) <= object.activation_range:
                     player.interactable_objects.append(object)
-            if size[1] > object.y > -30 and -30 < object.x < size[0]:
-                object.render(self.screen)
+
+    def get_render_entities(self):
+        return self.objects

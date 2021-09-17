@@ -16,7 +16,7 @@ def pil_to_pygame(image: Image.Image):
 
 
 class Entity:
-    def __init__(self, name: str, id: str, image: pygame.image = None):
+    def __init__(self, name: str, id: str, image: pygame.image = None, *, z_override: int = None):
         self.name = name
         self.id = id
         self.original_image = image
@@ -25,6 +25,7 @@ class Entity:
         self.yvel = 0
         self.x = 0
         self.y = 0
+        self.z_override = z_override
         self.y_offset = 0
         self.x_offset = 0
         if image is not None:
@@ -54,14 +55,17 @@ class Entity:
 
 
 class Player(Entity):
-    def __init__(self, color: typing.Tuple[int, int, int], *, is_main_player: bool = False):
+    def __init__(self, color: typing.Tuple[int, int, int], *, is_main_player: bool = False, z_override: int = None):
         super().__init__("Player", "player" if is_main_player else f"player-{str(color)}")
         img = self.get_image(self.get_frame())
         image = pygame.transform.scale(img, (128, 128))
+        self.health = 100
+        self.max_health = 100
         self.image = image
         self.tint_mask = None
         self.color = color
         self.interactable_objects = []
+        self.z_override = z_override
         self.set_color(color)
 
     def set_color(self, color):
@@ -135,12 +139,13 @@ class Player(Entity):
 
 class Object(Entity):
     def __init__(self, name: str, id: str, image, *, interactable: bool = False, range: int = None,
-                 enable_bloom: bool = False, bloom_image=None, moveable=False):
+                 enable_bloom: bool = False, bloom_image=None, moveable=False, z_override: int = None):
         super().__init__(name, id, image)
         self.interactable = interactable
         self.activation_range = range
         self.enable_bloom = enable_bloom
         self.moveable = moveable
+        self.z_override = z_override
         if self.enable_bloom:
             self.bloom_image = self.do_bloom(bloom_image)
         else:
@@ -176,5 +181,7 @@ class Object(Entity):
         screen.blit(self.image, pos.to_tuple())
         if self.enable_bloom:
             x = pos - (Vec2.from_tuple(self.image.get_size()) // Vec2(2, 2))
-            print(x)
             screen.blit(self.bloom_image, x.to_tuple())
+
+    def update(self):
+        pass

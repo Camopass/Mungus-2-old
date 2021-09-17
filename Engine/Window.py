@@ -1,7 +1,12 @@
+import typing
+
 import pygame
 
 from math import ceil
+
+from Engine.EntityManager import EntityManager
 from Engine.Maths import map_range
+from Engine.ObjectManager import ObjectManager
 
 
 class Window:
@@ -51,8 +56,11 @@ class Window:
         if not self.resized_rect.collidepoint(x, y):
             return 0, 0
         window = self.window_surface.get_rect()
-        m_x, m_y = map_range(x, self.center_position[0], window.width - self.center_position[0], 0, self.resized_rect.width), map_range(y, self.center_position[1], window.height - self.center_position[1], 0, self.resized_rect.height)
-        m_x, m_y = map_range(m_x, 0, self.resized_rect.width, 0, 1200), map_range(m_y, 0, self.resized_rect.height, 0, 800)
+        m_x, m_y = map_range(x, self.center_position[0], window.width - self.center_position[0], 0, self.resized_rect.
+                             width), map_range(y, self.center_position[1], window.height - self.center_position[1], 0,
+                                               self.resized_rect.height)
+        m_x, m_y = map_range(m_x, 0, self.resized_rect.width, 0, 1200), \
+                   map_range(m_y, 0, self.resized_rect.height, 0, 800)
 
         return m_x, m_y
 
@@ -60,6 +68,14 @@ class Window:
         self.window_surface.fill((0, 0, 0))
         resized_screen = pygame.transform.smoothscale(self.screen, (ceil(self.target_width), ceil(self.target_height)))
         self.window_surface.blit(resized_screen, self.center_position)
+
+    def render_managers(self, *managers: iter):
+        entities = []
+        for manager in managers:
+            entities += manager.get_render_entities()
+        entities.sort(key=lambda entity: entity.y if entity.z_override is None else entity.z_override)
+        for entity in entities:
+            entity.render(self.screen)
 
     def mouse_up(self, button):
         if self.entity_manager is not None:

@@ -20,4 +20,5 @@ class DebugScreen(DataScreen):
                 data += "    "
                 data += str(entity.x_offset) + ', '
                 data += str(entity.y_offset) + '\n'
+
         return data

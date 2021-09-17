@@ -8,6 +8,7 @@ from Engine.EntityManager import EntityManager
 from Engine.ObjectManager import ObjectManager
 from Engine.Window import Window
 from Screens.DebugScreen import DebugScreen
+from Screens.MainUI import MainUI
 from Screens.SettingsScreen import SettingsScreen
 
 pygame.init()
@@ -26,9 +27,10 @@ window.entity_manager = entity_manager
 
 lamp_image = pygame.image.load('assets/floor_light_1.png').convert_alpha()
 lamp_bloom = pygame.image.load('assets/floor_light_1_emission.png').convert_alpha()
-light = Object('Floor Lamp', 'floor_lamp_1', lamp_image, enable_bloom=True, bloom_image=lamp_bloom)
+light = Object('Floor Lamp', 'floor_lamp_1', lamp_image, enable_bloom=True, bloom_image=lamp_bloom, z_override=-1)
 light.x = 600
 light.y = 400
+light.yvel, light.yvel = (0, 0)
 
 object_manager = ObjectManager(window.screen, light)
 
@@ -44,29 +46,28 @@ settings_icon = pygame.image.load(resource_path('assets/Settings.png')).convert_
 settings_icon = pygame.transform.scale2x(settings_icon)
 settings = Button(1150, 2, 'settings', settings_icon, label='Settings', func=settins_screen.toggle_open)
 
-entity_manager.entities.append(settings)
+main_ui = MainUI(window, 5, 674, 256, 128, player)
 
 global use_gamepad
 pygame.joystick.init()
 joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
 use_gamepad = True if len(joysticks) > 0 else False
 
-
 debug_screen = DebugScreen(window, 900, 10, 275, 700, 'Debug Screen', entity_manager)
 
 '''
-        JoyButton:
-            A: 0
-            B: 1
-            X: 2
-            Y: 3
-            LB: 4
-            RB: 5
-            SHARE: 6
-            MENU: 7
-            LJ: 8
-            RJ: 9
-        '''
+JoyButton:
+    A: 0
+    B: 1
+    X: 2
+    Y: 3
+    LB: 4
+    RB: 5
+    SHARE: 6
+    MENU: 7
+    LJ: 8
+    RJ: 9
+'''
 
 
 def do_input(controlled_player):
@@ -93,6 +94,7 @@ def do_input(controlled_player):
             controlled_player.yvel += 1
         if key[pygame.K_b]:
             debug_screen.toggle_open()
+
 
 def main():
     while True:
@@ -125,14 +127,17 @@ def main():
             window.screen.blit(background, (0, 0))
 
             fps = round(clock.get_fps())
-            window.screen.blit(font.render(f'FPS: {fps}', False, [255, 255, 255]), (10, 10))
 
             do_input(player)
 
-            entity_manager.render()
+            entity_manager.update()
+            object_manager.update()
+            window.render_managers(entity_manager, object_manager)
             settins_screen.render()
             debug_screen.render()
-            object_manager.render()
+            main_ui.render()
+            window.screen.blit(font.render(f'FPS: {fps}', False, [255, 255, 255]), (10, 10))
+
             window.render()
 
             pygame.display.update()
