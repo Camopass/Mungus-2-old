@@ -15,5 +15,4 @@ class MainUI(Screen):
     def render(self):
         self.window.screen.blit(self.main_image, (self.x, self.y))
         width = int(self.mask.get_width() * (self.player.health / self.player.max_health))
-        print(width)
         self.window.screen.blit(self.mask, (self.x, self.y), (0, 0, width, self.mask.get_height()))
