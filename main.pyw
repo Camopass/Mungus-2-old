@@ -12,10 +12,13 @@ from Screens.DebugScreen import DebugScreen
 from Screens.MainUI import MainUI
 from Screens.SettingsScreen import SettingsScreen
 
+print(os.getcwd())
+
 with open("%s/Mungus2 Launch Info [DO NOT DELETE RENAME OR MOVE].txt" % os.path.join(os.environ["USERPROFILE"], "Desktop"), 'r+') as f:
     f.seek(0)
     data = f.read()
-    os.chdir(data)
+    if not os.getcwd() == "E:\PyOpenGLTest\\":
+        os.chdir(data)
 
 pygame.init()
 

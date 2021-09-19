@@ -48,7 +48,7 @@ def create_shortcut():
 
     desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
     path = os.path.join(desktop, 'Mungus 2.lnk')
-    target = os.path.join(os.getcwd(), "Mungus-2-master/main.py")
+    target = os.path.join(os.getcwd(), "Mungus-2-master/main.pyw")
     icon = os.path.join(os.getcwd(), "Mungus-2-master/Mungus.ico")
 
     shell = win32com.client.Dispatch("WScript.Shell")
