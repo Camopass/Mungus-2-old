@@ -1,6 +1,6 @@
-# MUNGUS V 1.0.0A
 import sys as sus
 import pygame
+import os
 
 from Engine import resource_path
 from Engine.Button import Button
@@ -11,6 +11,11 @@ from Engine.Window import Window
 from Screens.DebugScreen import DebugScreen
 from Screens.MainUI import MainUI
 from Screens.SettingsScreen import SettingsScreen
+
+with open("%s/Mungus2 Launch Info [DO NOT DELETE RENAME OR MOVE].txt" % os.path.join(os.environ["USERPROFILE"], "Desktop"), 'r+') as f:
+    f.seek(0)
+    data = f.read()
+    os.chdir(data)
 
 pygame.init()
 
