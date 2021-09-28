@@ -3,6 +3,8 @@ import pygame
 from Engine.EntityManager import EntityManager
 from Engine.Window import Window
 
+# In-Game screen
+
 
 class Screen:
     def __init__(self, window: Window, x: float, y: float, width: float, height: float):
@@ -41,6 +43,7 @@ class DataScreen(Screen):
     def get_data(self, entity_manage: EntityManager):
         return ''
 
+    # Render some text
     def render(self):
         if self.open:
             c = pygame.color.Color((10, 10, 10, 10))

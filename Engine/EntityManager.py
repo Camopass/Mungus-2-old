@@ -1,7 +1,4 @@
-import pygame
-
-from DebugConfig import debug_config
-from Engine.Button import Button
+# Entity capsule
 
 
 class EntityManager:

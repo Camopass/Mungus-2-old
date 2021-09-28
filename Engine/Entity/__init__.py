@@ -1,18 +1,8 @@
 import typing
 import pygame
-
-from PIL import Image, ImageFilter, ImageMath
 from math import sin
-from io import BytesIO
-
-from Engine import resource_path
 
 from Engine.Maths import Vec2
-
-
-def pil_to_pygame(image: Image.Image):
-    data = image.tobytes()
-    return pygame.image.fromstring(data, image.size, image.mode)
 
 
 class Entity:
@@ -117,11 +107,11 @@ class Player(Entity):
             return '{}00'.format('0' if abs(self.xvel) > abs(self.yvel) else dir)
 
     def get_image(self, frame):
-        image = resource_path(f'assets/{frame}0.png')
+        image = f'assets/{frame}0.png'
         return pygame.image.load(image).convert_alpha()
 
     def get_tint_mask(self, frame):
-        tint_mask = resource_path(f'assets/{frame}1.png')
+        tint_mask = f'assets/{frame}1.png'
         return pygame.image.load(tint_mask).convert_alpha()
 
     def update(self):
@@ -153,20 +143,6 @@ class Object(Entity):
 
     def interact(self, player: Player):
         pass
-
-    '''def do_bloom(self, image):
-        im = pygame.image.tostring(image, "RGBA", False)
-        im = Image.frombuffer("RGBA", self.image.get_size(), im)
-        im.show()
-        intensity = 10
-        buffers = [im]
-        for i in range(1, 2):
-            buffer = buffers[i - 1].resize((buffers[i - 1].size[0] // 2, buffers[i - 1].size[1] // 2))
-            buffers.append(pil_to_pygame(buffer.filter(ImageFilter.GaussianBlur(radius=(intensity - i))).resize(im.size)))
-        final = pil_to_pygame(buffers[0])
-        for buffer in buffers[1:]:
-            final.blit(buffer, (0, 0), special_flags=pygame.BLEND_ADD)
-        return final'''
 
     def do_bloom(self, image):
         image2 = pygame.transform.smoothscale(image, (image.get_width() // 10, image.get_height() // 10))

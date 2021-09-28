@@ -2,6 +2,8 @@ import pygame
 
 from Engine.Maths import Vec2, pythagoras
 
+# Object capsule
+
 
 class ObjectManager:
     def __init__(self, screen, *objects):

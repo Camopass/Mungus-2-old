@@ -68,6 +68,7 @@ class Vec2:
         return tuple((self.x, self.y))
 
 
+# We do a little proportions (like from 7th grade)
 def map_range(val, from_min, from_max, to_min, to_max):
     fromRange = from_max - from_min
     toRange = to_max - to_min
@@ -76,9 +77,20 @@ def map_range(val, from_min, from_max, to_min, to_max):
     return val * sc+co
 
 
+# Pythagorean Theorem (like from 6th grade)
 def pythagoras(a, b):
-    return (a ** 2 + b ** 2) ** 0.5
+    return (a * a + b * b) ** 0.5
 
 
+# Distance between two vectors
 def dist(a: Vec2, b: Vec2):
     return pythagoras(a, b)
+
+# fast lerp
+def lerp_f(a, b, t):
+    return a + t * (b - a)
+
+
+# good lerp
+def lerp_p(a, b, t):
+    return (1 - t) * a + t * b

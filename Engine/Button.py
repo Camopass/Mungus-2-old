@@ -1,5 +1,9 @@
 import pygame
 
+"""
+Buttons for all your button-y purposes
+"""
+
 
 class Button:
     def __init__(self, x, y, name, icon, func=None, label=None):
